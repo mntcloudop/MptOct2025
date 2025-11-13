@@ -7,7 +7,9 @@ from Script import script
 from pyrogram import Client, filters, enums
 from pyrogram.errors import ChatAdminRequired, FloodWait
 from pyrogram.types import *
-from database.ia_filterdb import col, sec_col, get_file_details, unpack_new_file_id, get_bad_files
+from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram.enums import ParseMode
+from database.ia_filterdb import col, sec_col, get_file_details, unpack_new_file_id, get_bad_files, get_movies_by_name, Media
 from database.users_chats_db import db, delete_all_referal_users, get_referal_users_count, get_referal_all_users, referal_add_user
 from database.join_reqs import JoinReqs
 from info import CLONE_MODE, OWNER_LNK, REACTIONS, CHANNELS, REQUEST_TO_JOIN_MODE, TRY_AGAIN_BTN, ADMINS, SHORTLINK_MODE, PREMIUM_AND_REFERAL_MODE, STREAM_MODE, AUTH_CHANNEL, REFERAL_PREMEIUM_TIME, REFERAL_COUNT, PAYMENT_TEXT, PAYMENT_QR, LOG_CHANNEL, PICS, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, PROTECT_CONTENT, CHNL_LNK, GRP_LNK, REQST_CHANNEL, SUPPORT_CHAT_ID, SUPPORT_CHAT, MAX_B_TN, VERIFY, SHORTLINK_API, SHORTLINK_URL, TUTORIAL, VERIFY_TUTORIAL, IS_TUTORIAL, URL
@@ -28,12 +30,12 @@ async def start(client, message):
         pass
     if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
         buttons = [[
-            InlineKeyboardButton('⤬ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ⤬', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
+            InlineKeyboardButton('👥 Add Bot to Group', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
         ],[
-            InlineKeyboardButton('✪ Sᴜᴘᴘᴏʀᴛ Gʀᴏᴜᴘ', url=f'https://t.me/{SUPPORT_CHAT}'),
-            InlineKeyboardButton('⌬ Mᴏᴠɪᴇ Gʀᴏᴜᴘ', url=GRP_LNK)
+            InlineKeyboardButton('💬 Support Group', url=f'https://t.me/{SUPPORT_CHAT}'),
+            InlineKeyboardButton('📽️ Movies & Series', url=GRP_LNK)
         ],[
-            InlineKeyboardButton('✇ Jᴏɪɴ Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ ✇', url=CHNL_LNK)
+            InlineKeyboardButton('⭐ Official Channel', url=CHNL_LNK)
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply(script.START_TXT.format(message.from_user.mention if message.from_user else message.chat.title, temp.U_NAME, temp.B_NAME), reply_markup=reply_markup, disable_web_page_preview=True)
@@ -49,29 +51,25 @@ async def start(client, message):
     if len(message.command) != 2:
         if PREMIUM_AND_REFERAL_MODE == True:
             buttons = [[
-                InlineKeyboardButton('⤬ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ⤬', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
+                InlineKeyboardButton('🤖 Add Me to Your Group', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
             ],[
-                InlineKeyboardButton('Eᴀʀɴ Mᴏɴᴇʏ 💸', callback_data="shortlink_info"),
-                InlineKeyboardButton('⌬ Mᴏᴠɪᴇ Gʀᴏᴜᴘ', url=GRP_LNK)
+                InlineKeyboardButton('🎬 𝑱𝒐𝒊𝒏 𝑴𝒐𝒗𝒊𝒆𝒔 & 𝑺𝒆𝒓𝒊𝒆𝒔 𝑮𝒓𝒐𝒖𝒑 👆', url=GRP_LNK)
             ],[
-                InlineKeyboardButton('〄 Hᴇʟᴘ', callback_data='help'),
-                InlineKeyboardButton('⍟ Aʙᴏᴜᴛ', callback_data='about')
+                InlineKeyboardButton('💬 Help', callback_data='help'),
+                InlineKeyboardButton('ℹ️ About', callback_data='about')
             ],[
-                InlineKeyboardButton('💳 Gᴇᴛ Fʀᴇᴇ Oʀ Pᴀɪᴅ Sᴜʙsᴄʀɪᴘᴛɪᴏɴ 💳', callback_data='subscription')
-            ],[
-                InlineKeyboardButton('✇ Jᴏɪɴ Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ ✇', url=CHNL_LNK)
+                InlineKeyboardButton('📢 Join Updates Channel', url=CHNL_LNK)
             ]]
         else:
             buttons = [[
-                InlineKeyboardButton('⤬ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ⤬', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
+                InlineKeyboardButton('🤖 Add Me to Your Group', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
             ],[
-                InlineKeyboardButton('Eᴀʀɴ Mᴏɴᴇʏ 💸', callback_data="shortlink_info"),
-                InlineKeyboardButton('⌬ Mᴏᴠɪᴇ Gʀᴏᴜᴘ', url=GRP_LNK)
+                InlineKeyboardButton('🎬 𝑱𝒐𝒊𝒏 𝑴𝒐𝒗𝒊𝒆𝒔 & 𝑺𝒆𝒓𝒊𝒆𝒔 𝑮𝒓𝒐𝒖𝒑 👆', url=GRP_LNK)
             ],[
-                InlineKeyboardButton('〄 Hᴇʟᴘ', callback_data='help'),
-                InlineKeyboardButton('⍟ Aʙᴏᴜᴛ', callback_data='about')
+                InlineKeyboardButton('💬 Help', callback_data='help'),
+                InlineKeyboardButton('ℹ️ About', callback_data='about')
             ],[
-                InlineKeyboardButton('✇ Jᴏɪɴ Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ ✇', url=CHNL_LNK)
+                InlineKeyboardButton('📢 Join Updates Channel', url=CHNL_LNK)
             ]]
         if CLONE_MODE == True:
             buttons.append([InlineKeyboardButton('🤖 Cʀᴇᴀᴛᴇ Yᴏᴜʀ Oᴡɴ Cʟᴏɴᴇ Bᴏᴛ 🤖', callback_data='clone')])
@@ -99,7 +97,7 @@ async def start(client, message):
             return
         try:
             btn = [[
-                InlineKeyboardButton("❆ Jᴏɪɴ Uᴘᴅᴀᴛᴇ Cʜᴀɴɴᴇʟ ❆", url=invite_link.invite_link)
+                InlineKeyboardButton("📢 Join Updates Channel", url=invite_link.invite_link)
             ]]
             if message.command[1] != "subscribe":
                 if REQUEST_TO_JOIN_MODE == True:
@@ -137,29 +135,25 @@ async def start(client, message):
     if len(message.command) == 2 and message.command[1] in ["subscribe", "error", "okay", "help"]:
         if PREMIUM_AND_REFERAL_MODE == True:
             buttons = [[
-                InlineKeyboardButton('⤬ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ⤬', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
+                InlineKeyboardButton('🤖 Add Me to Your Group', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
             ],[
-                InlineKeyboardButton('Eᴀʀɴ Mᴏɴᴇʏ 💸', callback_data="shortlink_info"),
-                InlineKeyboardButton('⌬ Mᴏᴠɪᴇ Gʀᴏᴜᴘ', url=GRP_LNK)
+                InlineKeyboardButton('🎬 𝑱𝒐𝒊𝒏 𝑴𝒐𝒗𝒊𝒆𝒔 & 𝑺𝒆𝒓𝒊𝒆𝒔 𝑮𝒓𝒐𝒖𝒑 👆', url=GRP_LNK)
             ],[
-                InlineKeyboardButton('〄 Hᴇʟᴘ', callback_data='help'),
-                InlineKeyboardButton('⍟ Aʙᴏᴜᴛ', callback_data='about')
+                InlineKeyboardButton('💬 Help', callback_data='help'),
+                InlineKeyboardButton('ℹ️ About', callback_data='about')
             ],[
-                InlineKeyboardButton('💳 Gᴇᴛ Fʀᴇᴇ Oʀ Pᴀɪᴅ Sᴜʙsᴄʀɪᴘᴛɪᴏɴ 💳', callback_data='subscription')
-            ],[
-                InlineKeyboardButton('✇ Jᴏɪɴ Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ ✇', url=CHNL_LNK)
+                InlineKeyboardButton('📢 Join Updates Channel', url=CHNL_LNK)
             ]]
         else:
             buttons = [[
-                InlineKeyboardButton('⤬ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ⤬', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
+                InlineKeyboardButton('🤖 Add Me to Your Group', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
             ],[
-                InlineKeyboardButton('Eᴀʀɴ Mᴏɴᴇʏ 💸', callback_data="shortlink_info"),
-                InlineKeyboardButton('⌬ Mᴏᴠɪᴇ Gʀᴏᴜᴘ', url=GRP_LNK)
+                InlineKeyboardButton('🎬 𝑱𝒐𝒊𝒏 𝑴𝒐𝒗𝒊𝒆𝒔 & 𝑺𝒆𝒓𝒊𝒆𝒔 𝑮𝒓𝒐𝒖𝒑 👆', url=GRP_LNK)
             ],[
-                InlineKeyboardButton('〄 Hᴇʟᴘ', callback_data='help'),
-                InlineKeyboardButton('⍟ Aʙᴏᴜᴛ', callback_data='about')
+                InlineKeyboardButton('💬 Help', callback_data='help'),
+                InlineKeyboardButton('ℹ️ About', callback_data='about')
             ],[
-                InlineKeyboardButton('✇ Jᴏɪɴ Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ ✇', url=CHNL_LNK)
+                InlineKeyboardButton('📢 Join Updates Channel', url=CHNL_LNK)
             ]]
         if CLONE_MODE == True:
             buttons.append([InlineKeyboardButton('🤖 Cʀᴇᴀᴛᴇ Yᴏᴜʀ Oᴡɴ Cʟᴏɴᴇ Bᴏᴛ 🤖', callback_data='clone')])
@@ -192,29 +186,25 @@ async def start(client, message):
         else:
             if PREMIUM_AND_REFERAL_MODE == True:
                 buttons = [[
-                    InlineKeyboardButton('⤬ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ⤬', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
+                    InlineKeyboardButton('🤖 Add Me to Your Group', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
                 ],[
-                    InlineKeyboardButton('Eᴀʀɴ Mᴏɴᴇʏ 💸', callback_data="shortlink_info"),
-                    InlineKeyboardButton('⌬ Mᴏᴠɪᴇ Gʀᴏᴜᴘ', url=GRP_LNK)
+                    InlineKeyboardButton('🎬 𝑱𝒐𝒊𝒏 𝑴𝒐𝒗𝒊𝒆𝒔 & 𝑺𝒆𝒓𝒊𝒆𝒔 𝑮𝒓𝒐𝒖𝒑 👆', url=GRP_LNK)
                 ],[
-                    InlineKeyboardButton('〄 Hᴇʟᴘ', callback_data='help'),
-                    InlineKeyboardButton('⍟ Aʙᴏᴜᴛ', callback_data='about')
+                    InlineKeyboardButton('💬 Help', callback_data='help'),
+                    InlineKeyboardButton('ℹ️ About', callback_data='about')
                 ],[
-                    InlineKeyboardButton('💳 Gᴇᴛ Fʀᴇᴇ Oʀ Pᴀɪᴅ Sᴜʙsᴄʀɪᴘᴛɪᴏɴ 💳', callback_data='subscription')
-                ],[
-                    InlineKeyboardButton('✇ Jᴏɪɴ Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ ✇', url=CHNL_LNK)
+                    InlineKeyboardButton('📢 Join Updates Channel', url=CHNL_LNK)
                 ]]
             else:
                 buttons = [[
-                    InlineKeyboardButton('⤬ Aᴅᴅ Mᴇ Tᴏ Yᴏᴜʀ Gʀᴏᴜᴘ ⤬', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
+                    InlineKeyboardButton('🤖 Add Me to Your Group', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
                 ],[
-                    InlineKeyboardButton('Eᴀʀɴ Mᴏɴᴇʏ 💸', callback_data="shortlink_info"),
-                    InlineKeyboardButton('⌬ Mᴏᴠɪᴇ Gʀᴏᴜᴘ', url=GRP_LNK)
+                    InlineKeyboardButton('🎬 𝑱𝒐𝒊𝒏 𝑴𝒐𝒗𝒊𝒆𝒔 & 𝑺𝒆𝒓𝒊𝒆𝒔 𝑮𝒓𝒐𝒖𝒑 👆', url=GRP_LNK)
                 ],[
-                    InlineKeyboardButton('〄 Hᴇʟᴘ', callback_data='help'),
-                    InlineKeyboardButton('⍟ Aʙᴏᴜᴛ', callback_data='about')
+                    InlineKeyboardButton('💬 Help', callback_data='help'),
+                    InlineKeyboardButton('ℹ️ About', callback_data='about')
                 ],[
-                    InlineKeyboardButton('✇ Jᴏɪɴ Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ ✇', url=CHNL_LNK)
+                    InlineKeyboardButton('📢 Join Updates Channel', url=CHNL_LNK)
                 ]]
             if CLONE_MODE == True:
                 buttons.append([InlineKeyboardButton('🤖 Cʀᴇᴀᴛᴇ Yᴏᴜʀ Oᴡɴ Cʟᴏɴᴇ Bᴏᴛ 🤖', callback_data='clone')])
@@ -289,27 +279,27 @@ async def start(client, message):
                         text=f"•• ʟɪɴᴋ ɢᴇɴᴇʀᴀᴛᴇᴅ ꜰᴏʀ ɪᴅ #{user_id} \n•• ᴜꜱᴇʀɴᴀᴍᴇ : {username} \n\n•• ᖴᎥᒪᗴ Nᗩᗰᗴ : {fileName}",
                         quote=True,
                         disable_web_page_preview=True,
-                        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🚀 Fast Download 🚀", url=download),  # we download Link
-                                                            InlineKeyboardButton('🖥️ Watch online 🖥️', url=stream)]])  # web stream Link
+                        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("📥 Download Now 📥", url=download),  # we download Link
+                                                            InlineKeyboardButton('🎥 Stream Online 🖥️', url=stream)]])  # web stream Link
                     )
                 if STREAM_MODE == True:
                     button = [[
-                        InlineKeyboardButton('Sᴜᴘᴘᴏʀᴛ Gʀᴏᴜᴘ', url=f'https://t.me/{SUPPORT_CHAT}'),
-                        InlineKeyboardButton('Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ', url=CHNL_LNK)
+                        InlineKeyboardButton('🛠️ Support Group', url=f'https://t.me/{SUPPORT_CHAT}'),
+                        InlineKeyboardButton('📢 Updates Channel', url=CHNL_LNK)
                     ],[
-                        InlineKeyboardButton('𝗕𝗢𝗧 𝗢𝗪𝗡𝗘𝗥', url=OWNER_LNK)
+                        InlineKeyboardButton('👨‍💼 𝓑𝓸𝓽 𝓞𝔀𝓷𝓮𝓻 👨‍💼', url=OWNER_LNK)
                     ],[
-                        InlineKeyboardButton("🚀 Fast Download 🚀", url=download),
-                        InlineKeyboardButton('🖥️ Watch online 🖥️', url=stream)
+                        InlineKeyboardButton("📥 Download Now 📥", url=download),
+                        InlineKeyboardButton('📥 Download Now 📥', url=stream)
                     ],[
                         InlineKeyboardButton("• ᴡᴀᴛᴄʜ ɪɴ ᴡᴇʙ ᴀᴘᴘ •", web_app=WebAppInfo(url=stream))
                     ]]
                 else:
                     button = [[
-                        InlineKeyboardButton('Sᴜᴘᴘᴏʀᴛ Gʀᴏᴜᴘ', url=f'https://t.me/{SUPPORT_CHAT}'),
-                        InlineKeyboardButton('Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ', url=CHNL_LNK)
+                        InlineKeyboardButton('🛠️ Support Group', url=f'https://t.me/{SUPPORT_CHAT}'),
+                        InlineKeyboardButton('📢 Updates Channel', url=CHNL_LNK)
                     ],[
-                        InlineKeyboardButton('𝗕𝗢𝗧 𝗢𝗪𝗡𝗘𝗥', url=OWNER_LNK)
+                        InlineKeyboardButton('👨‍💼 𝓑𝓸𝓽 𝓞𝔀𝓷𝓮𝓻 👨‍💼', url=OWNER_LNK)
                     ]]
                 msg = await client.send_cached_media(
                     chat_id=message.from_user.id,
@@ -393,32 +383,32 @@ async def start(client, message):
                     fileName = {quote_plus(get_name(log_msg))}
                     stream = f"{URL}watch/{str(log_msg.id)}/{quote_plus(get_name(log_msg))}?hash={get_hash(log_msg)}"
                     download = f"{URL}{str(log_msg.id)}/{quote_plus(get_name(log_msg))}?hash={get_hash(log_msg)}"
- 
+ #log file name + user - user id 
                     await log_msg.reply_text(
                         text=f"•• ʟɪɴᴋ ɢᴇɴᴇʀᴀᴛᴇᴅ ꜰᴏʀ ɪᴅ #{user_id} \n•• ᴜꜱᴇʀɴᴀᴍᴇ : {username} \n\n•• ᖴᎥᒪᗴ Nᗩᗰᗴ : {fileName}",
                         quote=True,
                         disable_web_page_preview=True,
-                        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🚀 Fast Download 🚀", url=download),  # we download Link
-                                                            InlineKeyboardButton('🖥️ Watch online 🖥️', url=stream)]])  # web stream Link
+                        reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("📥 Download Now 📥", url=download),  # we download Link
+                                                            InlineKeyboardButton('🎥 Stream Online 🖥️', url=stream)]])  # web stream Link
                     )
                 if STREAM_MODE == True:
                     button = [[
-                        InlineKeyboardButton('Sᴜᴘᴘᴏʀᴛ Gʀᴏᴜᴘ', url=f'https://t.me/{SUPPORT_CHAT}'),
-                        InlineKeyboardButton('Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ', url=CHNL_LNK)
+                        InlineKeyboardButton('🛠️ Support Group', url=f'https://t.me/{SUPPORT_CHAT}'),
+                        InlineKeyboardButton('📢 Updates Channel', url=CHNL_LNK)
                     ],[
-                        InlineKeyboardButton('𝗕𝗢𝗧 𝗢𝗪𝗡𝗘𝗥', url=OWNER_LNK)
+                        InlineKeyboardButton('👨‍💼 𝓑𝓸𝓽 𝓞𝔀𝓷𝓮𝓻 👨‍💼', url=OWNER_LNK)
                     ],[
-                        InlineKeyboardButton("🚀 Fast Download 🚀", url=download),
-                        InlineKeyboardButton('🖥️ Watch online 🖥️', url=stream)
+                        InlineKeyboardButton("📥 Download Now 📥", url=download),
+                        InlineKeyboardButton('🎥 Stream Online 🖥️', url=stream)
                     ],[
                         InlineKeyboardButton("• ᴡᴀᴛᴄʜ ɪɴ ᴡᴇʙ ᴀᴘᴘ •", web_app=WebAppInfo(url=stream))
                     ]]
                 else:
                     button = [[
-                        InlineKeyboardButton('Sᴜᴘᴘᴏʀᴛ Gʀᴏᴜᴘ', url=f'https://t.me/{SUPPORT_CHAT}'),
-                        InlineKeyboardButton('Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ', url=CHNL_LNK)
+                        InlineKeyboardButton('🛠️ Support Group', url=f'https://t.me/{SUPPORT_CHAT}'),
+                        InlineKeyboardButton('📢 Updates Channel', url=CHNL_LNK)
                     ],[
-                        InlineKeyboardButton('𝗕𝗢𝗧 𝗢𝗪𝗡𝗘𝗥', url=OWNER_LNK)
+                        InlineKeyboardButton('👨‍💼 𝓑𝓸𝓽 𝓞𝔀𝓷𝓮𝓻 👨‍💼', url=OWNER_LNK)
                     ]]
                 try:
                     p = await msg.copy(message.chat.id, caption=f_caption, protect_content=True if protect == "/pbatch" else False, reply_markup=InlineKeyboardMarkup(button))
@@ -483,11 +473,11 @@ async def start(client, message):
         pre = 'allfilesp' if settings['file_secure'] else 'allfiles'
         g = await get_shortlink(chat_id, f"https://telegram.me/{temp.U_NAME}?start={pre}_{file_id}")
         btn = [[
-            InlineKeyboardButton('📂 Dᴏᴡɴʟᴏᴀᴅ Nᴏᴡ 📂', url=g)
+            InlineKeyboardButton('💾 Get File 📂', url=g)
         ]]
         if settings['tutorial']:
             btn.append([InlineKeyboardButton('⁉️ Hᴏᴡ Tᴏ Dᴏᴡɴʟᴏᴀᴅ ⁉️', url=await get_tutorial(chat_id))])
-        k = await client.send_message(chat_id=message.from_user.id,text=f"<b>Get All Files in a Single Click!!!\n\n📂 ʟɪɴᴋ ➠ : {g}\n\n<i>Note: This message is deleted in 5 mins to avoid copyrights. Save the link to Somewhere else</i></b>", reply_markup=InlineKeyboardMarkup(btn))
+        k = await client.send_message(chat_id=message.from_user.id,text=f"<b>Get All Files in a Single Click!!!\n\n📦 ʟɪɴᴋ ➠ : {g}\n\n<i>Note: This message is deleted in 5 mins to avoid copyrights. Save the link to Somewhere else</i></b>", reply_markup=InlineKeyboardMarkup(btn))
         await asyncio.sleep(300)
         await k.edit("<b>Your message is successfully deleted!!!</b>")
         return
@@ -502,7 +492,7 @@ async def start(client, message):
         files = files_
         g = await get_shortlink(chat_id, f"https://telegram.me/{temp.U_NAME}?start={pre}_{file_id}")
         btn = [[
-            InlineKeyboardButton('📂 Dᴏᴡɴʟᴏᴀᴅ Nᴏᴡ 📂', url=g)
+            InlineKeyboardButton('💾 Get File 📂', url=g)
         ]]
         if settings['tutorial']:
             btn.append([InlineKeyboardButton('⁉️ Hᴏᴡ Tᴏ Dᴏᴡɴʟᴏᴀᴅ ⁉️', url=await get_tutorial(chat_id))])
@@ -545,13 +535,13 @@ async def start(client, message):
                     )
                     return
             button = [[
-                InlineKeyboardButton('Sᴜᴘᴘᴏʀᴛ Gʀᴏᴜᴘ', url=f'https://t.me/{SUPPORT_CHAT}'),
-                InlineKeyboardButton('Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ', url=CHNL_LNK)
+                InlineKeyboardButton('🛠️ Support Group', url=f'https://t.me/{SUPPORT_CHAT}'),
+                InlineKeyboardButton('📢 Updates Channel', url=CHNL_LNK)
             ],[
-                InlineKeyboardButton("𝗕𝗢𝗧 𝗢𝗪𝗡𝗘𝗥", url=OWNER_LNK)
+                InlineKeyboardButton("👨‍💼 𝓑𝓸𝓽 𝓞𝔀𝓷𝓮𝓻 👨‍💼", url=OWNER_LNK)
             ]]
             if STREAM_MODE == True:
-                button.append([InlineKeyboardButton('🚀 Fast Download / Watch Online🖥️', callback_data=f'generate_stream_link:{file_id}')])
+                button.append([InlineKeyboardButton('📥 Download / 🎥 Watch Online', callback_data=f'generate_stream_link:{file_id}')])
             msg = await client.send_cached_media(
                 chat_id=message.from_user.id,
                 file_id=file_id,
@@ -580,7 +570,7 @@ async def start(client, message):
             files = files_
             g = await get_shortlink(chat_id, f"https://telegram.me/{temp.U_NAME}?start={pre}_{file_id}")
             btn = [[
-                InlineKeyboardButton('📂 Dᴏᴡɴʟᴏᴀᴅ Nᴏᴡ 📂', url=g)
+                InlineKeyboardButton('💾 Get File 📂', url=g)
             ]]
             if settings['tutorial']:
                 btn.append([InlineKeyboardButton('⁉️ Hᴏᴡ Tᴏ Dᴏᴡɴʟᴏᴀᴅ ⁉️', url=await get_tutorial(chat_id))])
@@ -607,13 +597,13 @@ async def start(client, message):
                     )
                     return
             button = [[
-                InlineKeyboardButton('Sᴜᴘᴘᴏʀᴛ Gʀᴏᴜᴘ', url=f'https://t.me/{SUPPORT_CHAT}'),
-                InlineKeyboardButton('Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ', url=CHNL_LNK)
+                InlineKeyboardButton('🛠️ Support Group', url=f'https://t.me/{SUPPORT_CHAT}'),
+                InlineKeyboardButton('📢 Updates Channel', url=CHNL_LNK)
             ],[
-                InlineKeyboardButton("𝗕𝗢𝗧 𝗢𝗪𝗡𝗘𝗥", url=OWNER_LNK)
+                InlineKeyboardButton("👨‍💼 𝓑𝓸𝓽 𝓞𝔀𝓷𝓮𝓻 👨‍💼", url=OWNER_LNK)
             ]]
             if STREAM_MODE == True:
-                button.append([InlineKeyboardButton('🚀 Fast Download / Watch Online🖥️', callback_data=f'generate_stream_link:{file_id}')])
+                button.append([InlineKeyboardButton('📥 Download / 🎥 Watch Online', callback_data=f'generate_stream_link:{file_id}')])
             msg = await client.send_cached_media(
                 chat_id=message.from_user.id,
                 file_id=file_id,
@@ -622,7 +612,7 @@ async def start(client, message):
             )
             filetype = msg.media
             file = getattr(msg, filetype.value)
-            title = '@MnTLinkss  ' + ' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@'), file.file_name.split()))
+            title = ' ' + ' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@'), file.file_name.split()))
             size=get_size(file.file_size)
             f_caption = f"<code>{title}</code>"
             if CUSTOM_FILE_CAPTION:
@@ -635,7 +625,7 @@ async def start(client, message):
                 reply_markup=InlineKeyboardMarkup(button)
             )
             btn = [[
-                InlineKeyboardButton("Get File Again", callback_data=f'del#{file_id}')
+                InlineKeyboardButton("🔄 Get File Again", callback_data=f'del#{file_id}')
             ]]
             k = await msg.reply("<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\nThis Movie File/Video will be deleted in <b><u>10 mins</u> 🫥 <i></b>(Due to Copyright Issues)</i>.\n\n<b><i>Please forward this File/Video to your Saved Messages and Start Download there</i></b>",quote=True)
             await asyncio.sleep(600)
@@ -646,7 +636,7 @@ async def start(client, message):
             pass
         return await message.reply('No such file exist.')
     files = files_
-    title = '@MnTLinkss  ' + ' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@'), files["file_name"].split()))
+    title = ' ' + ' '.join(filter(lambda x: not x.startswith('[') and not x.startswith('@'), files["file_name"].split()))
     size=get_size(files["file_size"])
     f_caption=files["caption"]
     if CUSTOM_FILE_CAPTION:
@@ -671,13 +661,13 @@ async def start(client, message):
             )
             return
     button = [[
-        InlineKeyboardButton('Sᴜᴘᴘᴏʀᴛ Gʀᴏᴜᴘ', url=f'https://t.me/{SUPPORT_CHAT}'),
-        InlineKeyboardButton('Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ', url=CHNL_LNK)
+        InlineKeyboardButton('🛠️ Support Group', url=f'https://t.me/{SUPPORT_CHAT}'),
+        InlineKeyboardButton('📢 Updates Channel', url=CHNL_LNK)
     ],[
-        InlineKeyboardButton("𝗕𝗢𝗧 𝗢𝗪𝗡𝗘𝗥", url=OWNER_LNK)
+        InlineKeyboardButton("👨‍💼 𝓑𝓸𝓽 𝓞𝔀𝓷𝓮𝓻 👨‍💼", url=OWNER_LNK)
     ]]
     if STREAM_MODE == True:
-        button.append([InlineKeyboardButton('🚀 Fast Download / Watch Online🖥️', callback_data=f'generate_stream_link:{file_id}')])
+        button.append([InlineKeyboardButton('📥 Download / 🎥 Watch Online', callback_data=f'generate_stream_link:{file_id}')])
     msg = await client.send_cached_media(
         chat_id=message.from_user.id,
         file_id=file_id,
@@ -686,7 +676,7 @@ async def start(client, message):
         reply_markup=InlineKeyboardMarkup(button)
     )
     btn = [[
-        InlineKeyboardButton("Get File Again", callback_data=f'del#{file_id}')
+        InlineKeyboardButton("🔄 Get File Again", callback_data=f'del#{file_id}')
     ]]
     k = await msg.reply("<b><u>❗️❗️❗️IMPORTANT❗️️❗️❗️</u></b>\n\nThis Movie File/Video will be deleted in <b><u>10 mins</u> 🫥 <i></b>(Due to Copyright Issues)</i>.\n\n<b><i>Please forward this File/Video to your Saved Messages and Start Download there</i></b>",quote=True)
     await asyncio.sleep(600)
@@ -813,7 +803,7 @@ async def delete_all_index(bot, message):
 async def delete_all_index_confirm(bot, query):
     col.drop()
     sec_col.drop()
-    await query.answer('Piracy Is Crime')
+    await query.answer('🗑️ Deleting...')
     await query.message.edit('Succesfully Deleted All The Indexed Files.')
 
 
@@ -1103,7 +1093,7 @@ async def requests(bot, message):
     if success:
         link = await bot.create_chat_invite_link(int(REQST_CHANNEL))
         btn = [[
-            InlineKeyboardButton('Join Channel', url=link.invite_link),
+            InlineKeyboardButton('Join 📢 Updates Channel', url=link.invite_link),
             InlineKeyboardButton('View Request', url=f"{reported_post.link}")
         ]]
         await message.reply_text("<b>Your request has been added! Please wait for some time.\n\nJoin Channel First & View Request</b>", reply_markup=InlineKeyboardMarkup(btn))
@@ -1168,7 +1158,7 @@ async def shortlink(bot, message):
         return await message.reply(f"You are anonymous admin. Turn off anonymous admin and try again this command")
     chat_type = message.chat.type
     if chat_type == enums.ChatType.PRIVATE:
-        return await message.reply_text(f"<b>Hey {message.from_user.mention}, This command only works on groups !\n\n<u>Follow These Steps to Connect Shortener:</u>\n\n1. Add Me in Your Group with Full Admin Rights\n\n2. After Adding in Grp, Set your Shortener\n\nSend this command in your group\n\n—> /shortlink ""{your_shortener_website_name} {your_shortener_api}\n\n#Sample:-\n/shortlink kpslink.in CAACAgUAAxkBAAEJ4GtkyPgEzpIUC_DSmirN6eFWp4KInAACsQoAAoHSSFYub2D15dGHfy8E\n\nThat's it!!! Enjoy Earning Money 💲\n\n[[[ Trusted Earning Site - https://kpslink.in]]]\n\nIf you have any Doubts, Feel Free to Ask me - @kingvj01\n\n(Puriyala na intha contact la message pannunga - @kngvj01)</b>")
+        return await message.reply_text(f"<b>Hey {message.from_user.mention}, This command only works on groups !\n\n<u>Follow These Steps to Connect Shortener:</u>\n\n1. Add Me in Your Group with Full Admin Rights\n\n2. After Adding in Grp, Set your Shortener\n\nSend this command in your group\n\n—> /shortlink ""{your_shortener_website_name} {your_shortener_api}\n\n#Sample:-\n/shortlink kpslink.in CAACAgUAAxkBAAEJ4GtkyPgEzpIUC_DSmirN6eFWp4KInAACsQoAAoHSSFYub2D15dGHfy8E\n\nThat's it!!! Enjoy Earning Money 💲\n\n[[[ Trusted Earning Site - https://kpslink.in]]]\n\nIf you have any Doubts, Feel Free to Ask me - \n\n(Puriyala na intha contact la message pannunga -)</b>")
     elif chat_type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
         grpid = message.chat.id
         title = message.chat.title
@@ -1502,3 +1492,387 @@ async def purge_requests(client, message):
             parse_mode=enums.ParseMode.MARKDOWN,
             disable_web_page_preview=True
         )
+
+
+# ----------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
+# GetMovie Command for Admins
+# @Client.on_message(filters.command("getmovie") & filters.user(ADMINS))
+# async def getmovie_command(client, message):
+#     """Handle /getmovie command to search for movie files - Admin Only"""
+#     try:
+#         # Check if user provided a movie name
+#         if len(message.command) < 2:
+#             await message.reply_text(
+#                 "❌ **Please provide a movie name.**\n\n"
+#                 "**Usage:** `/getmovie <movie name>`\n"
+#                 "**Example:** `/getmovie The Fantastic Four`"
+#             )
+#             return
+
+#         # Get the movie name from command arguments
+#         movie_name = " ".join(message.command[1:])
+        
+#         # Log the command usage
+#         logger.info(f"Admin {message.from_user.id} searched for movie: {movie_name}")
+
+#         # Show searching message
+#         search_msg = await message.reply_text(f"🔍 **Searching for '{movie_name}'...**")
+        
+#         # Search for movie files (sync call since we're using PyMongo)
+#         media = Media()
+#         results = media.search_movie_files(movie_name, limit=10)
+        
+#         if not results:
+#             await search_msg.edit_text(f"❌ **No files found for '{movie_name}'**")
+#             return
+
+#         # Format the results
+#         bot_username = (await client.get_me()).username
+#         response = format_movie_results(results, bot_username)
+        
+#         # Send the response
+#         await send_long_message(client, search_msg, response)
+
+#     except Exception as e:
+#         logger.error(f"Error in getmovie command: {e}", exc_info=True)
+#         await message.reply_text(
+#             "❌ **An error occurred while searching. Please try again later.**"
+#         )
+
+# def format_movie_results(results, bot_username):
+#     """Format movie results into a readable message"""
+#     if not results:
+#         return "**No results found.**"
+    
+#     message_parts = []
+#     message_parts.append(f"🎬 **Search Results ({len(results)} found):**\n\n")
+    
+#     for i, result in enumerate(results, 1):
+#         # Get file name (prefer file_name, fall back to caption)
+#         file_name = result.get('file_name', 'Unknown')
+        
+#         # Clean caption if available for better display
+#         if result.get('caption'):
+#             import re
+#             from html import unescape
+#             caption = unescape(result['caption'])
+#             caption = re.sub(r'<.*?>', '', caption).strip()
+#             if caption and len(caption) > 10:  # Only use if meaningful
+#                 file_name = caption
+        
+#         # Get file size in readable format
+#         file_size = get_size(result.get('file_size', 0))
+        
+#         # Create direct link
+#         file_id = result.get('file_id', '')
+#         direct_link = f"https://t.me/{bot_username}?start=file_{file_id}"
+        
+#         # Format the entry (exactly as requested)
+#         entry = (
+#             f"🎬 {file_name}\n"
+#             f"📦 {file_size}\n"
+#             f"🔗 {direct_link}\n"
+#         )
+        
+#         message_parts.append(entry)
+#         if i < len(results):  # Add spacing between entries except for the last one
+#             message_parts.append("")
+    
+#     return "\n".join(message_parts)
+
+# async def send_long_message(client, message_obj, text, max_length=4096):
+#     """Send long messages by splitting them if they exceed Telegram's limit"""
+#     if len(text) <= max_length:
+#         await message_obj.edit_text(text)
+#         return
+    
+#     # Split the message into chunks
+#     messages = []
+#     current_message = ""
+    
+#     for line in text.split('\n'):
+#         if len(current_message + line + '\n') > max_length:
+#             if current_message:
+#                 messages.append(current_message.strip())
+#                 current_message = line + '\n'
+#             else:
+#                 # Single line is too long, split it
+#                 chunks = [line[i:i+max_length] for i in range(0, len(line), max_length)]
+#                 messages.extend(chunks[:-1])
+#                 current_message = chunks[-1] + '\n'
+#         else:
+#             current_message += line + '\n'
+    
+#     if current_message.strip():
+#         messages.append(current_message.strip())
+    
+#     # Send all message chunks (edit first message, send others as new)
+#     for i, msg in enumerate(messages):
+#         if i == 0:
+#             await message_obj.edit_text(msg)
+#         else:
+#             await message_obj.reply_text(msg)
+
+# def get_size(size):
+#     """Convert file size to human readable format"""
+#     if not size:
+#         return "0 B"
+    
+#     try:
+#         size = int(size)
+#         power = 2**10
+#         n = 0
+#         power_labels = {0: 'B', 1: 'KB', 2: 'MB', 3: 'GB', 4: 'TB'}
+#         while size > power:
+#             size /= power
+#             n += 1
+#         return f"{size:.2f} {power_labels[n]}"
+#     except:
+#         return "Unknown"
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+
+# ----------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
+# GetMovie Command for Admins with Pagination - Temp-free version
+MOVIE_SEARCH_DATA = {}  # Global dictionary for storing movie search results
+
+@Client.on_message(filters.command("getmovie") & filters.user(ADMINS))
+async def getmovie_command(client, message):
+    """Handle /getmovie command to search for movie files - Admin Only"""
+    try:
+        # Check if user provided a movie name
+        if len(message.command) < 2:
+            await message.reply_text(
+                "❌ **Please provide a movie name.**\n\n"
+                "**Usage:** `/getmovie <movie name>`\n"
+                "**Example:** `/getmovie The Fantastic Four`"
+            )
+            return
+
+        # Get the movie name from command arguments
+        movie_name = " ".join(message.command[1:])
+        
+        # Log the command usage
+        logger.info(f"Admin {message.from_user.id} searched for movie: {movie_name}")
+
+        # Show searching message
+        search_msg = await message.reply_text(f"🔍 **Searching for '{movie_name}'...**")
+        
+        # Search for movie files (get all results first)
+        media = Media()
+        all_results = media.search_movie_files(movie_name, limit=100)  # Get more results for pagination
+        
+        if not all_results:
+            await search_msg.edit_text(f"❌ **No files found for '{movie_name}'**")
+            return
+
+        # Store results in global dictionary for pagination
+        user_id = message.from_user.id
+        MOVIE_SEARCH_DATA[user_id] = {
+            'query': movie_name,
+            'results': all_results,
+            'page': 1,
+            'total_pages': (len(all_results) + 9) // 10,  # Calculate total pages (ceil division)
+            'timestamp': message.date  # Store timestamp for cleanup
+        }
+
+        # Clean up old searches (older than 1 hour)
+        await cleanup_old_searches()
+
+        # Show first page
+        await show_movie_page(client, search_msg, user_id, 1)
+
+    except Exception as e:
+        logger.error(f"Error in getmovie command: {e}", exc_info=True)
+        await message.reply_text(
+            "❌ **An error occurred while searching. Please try again later.**"
+        )
+
+async def show_movie_page(client, message_obj, user_id, page):
+    """Show a specific page of movie results"""
+    try:
+        user_data = MOVIE_SEARCH_DATA.get(user_id)
+        if not user_data:
+            await message_obj.edit_text("❌ **Search session expired. Please search again.**")
+            return
+
+        results = user_data['results']
+        query = user_data['query']
+        total_pages = user_data['total_pages']
+        
+        # Validate page number
+        if page < 1 or page > total_pages:
+            await message_obj.edit_text("❌ **Invalid page number.**")
+            return
+
+        # Calculate start and end indices for current page
+        start_idx = (page - 1) * 10
+        end_idx = start_idx + 10
+        page_results = results[start_idx:end_idx]
+
+        # Format the results for current page
+        bot_username = (await client.get_me()).username
+        response = format_movie_results(page_results, bot_username, page, total_pages, query)
+        
+        # Create navigation buttons
+        buttons = []
+        if total_pages > 1:
+            if page > 1:
+                buttons.append(InlineKeyboardButton("⬅️ Previous", callback_data=f"movie_prev_{page}"))
+            if page < total_pages:
+                buttons.append(InlineKeyboardButton("Next ➡️", callback_data=f"movie_next_{page}"))
+        
+        if buttons:
+            # Add refresh and close buttons in second row
+            nav_buttons = [buttons]
+            nav_buttons.append([
+                InlineKeyboardButton("🔄 Refresh", callback_data=f"movie_refresh_{page}"),
+                InlineKeyboardButton("❌ Close", callback_data="movie_close")
+            ])
+            reply_markup = InlineKeyboardMarkup(nav_buttons)
+        else:
+            # Only close button if no navigation
+            reply_markup = InlineKeyboardMarkup([[InlineKeyboardButton("❌ Close", callback_data="movie_close")]])
+
+        # Update message with current page
+        await message_obj.edit_text(response, reply_markup=reply_markup)
+
+        # Update current page in user data
+        MOVIE_SEARCH_DATA[user_id]['page'] = page
+
+    except Exception as e:
+        logger.error(f"Error showing movie page: {e}", exc_info=True)
+        await message_obj.edit_text("❌ **Error displaying results.**")
+
+def format_movie_results(results, bot_username, current_page, total_pages, query):
+    """Format movie results into a readable message with pagination info"""
+    if not results:
+        return "**No results found.**"
+    
+    message_parts = []
+    message_parts.append(f"**🎬 Search Results for '{query}'**")
+    message_parts.append(f"**📄 Page {current_page} of {total_pages}**")
+    message_parts.append(f"**📊 Showing {len(results)} results**\n")
+    
+    for i, result in enumerate(results, 1):
+        # Get file name (prefer file_name, fall back to caption)
+        file_name = result.get('file_name', 'Unknown')
+        
+        # Clean caption if available for better display
+        if result.get('caption'):
+            import re
+            from html import unescape
+            caption = unescape(result['caption'])
+            caption = re.sub(r'<.*?>', '', caption).strip()
+            # Remove @MnTLinkss and other unwanted text
+            caption = re.sub(r'@\w+', '', caption).strip()
+            caption = re.sub(r'Join_', '', caption).strip()
+            if caption and len(caption) > 10:  # Only use if meaningful
+                file_name = caption
+        
+        # Clean file name - remove unwanted symbols and text
+        file_name = re.sub(r'@\w+', '', file_name)  # Remove @tags
+        file_name = re.sub(r'Join_', '', file_name)  # Remove Join_
+        file_name = re.sub(r'--', '', file_name)  # Remove --
+        file_name = re.sub(r'_\s*$', '', file_name)  # Remove trailing _
+        file_name = file_name.strip()
+        
+        # Get file size in readable format
+        file_size = get_size(result.get('file_size', 0))
+        
+        # Create direct link
+        file_id = result.get('file_id', '')
+        direct_link = f"https://t.me/{bot_username}?start=file_{file_id}"
+        
+        # Calculate global result number
+        result_number = ((current_page - 1) * 10) + i
+        
+        # Format the entry with bold text and italic file name
+        entry = (
+            f"**<b><i>{file_name}</i></b>**\n"
+            f"**{file_size} - {direct_link}**\n"
+        )
+        
+        message_parts.append(entry)
+    
+    message_parts.append(f"\n**💡 Tip: Use the buttons below to navigate through pages!**")
+    
+    return "\n".join(message_parts)
+
+async def cleanup_old_searches():
+    """Clean up search data older than 1 hour"""
+    try:
+        import time
+        current_time = time.time()
+        expired_users = []
+        
+        for user_id, data in MOVIE_SEARCH_DATA.items():
+            # If data is older than 1 hour (3600 seconds), mark for deletion
+            if hasattr(data, 'timestamp'):
+                if current_time - data['timestamp'] > 3600:
+                    expired_users.append(user_id)
+        
+        # Remove expired data
+        for user_id in expired_users:
+            del MOVIE_SEARCH_DATA[user_id]
+            
+    except Exception as e:
+        logger.error(f"Error cleaning up old searches: {e}")
+
+# Callback query handler for pagination
+@Client.on_callback_query(filters.regex(r"^movie_"))
+async def movie_pagination_callback(client, callback_query):
+    """Handle movie pagination callbacks"""
+    try:
+        data = callback_query.data
+        user_id = callback_query.from_user.id
+        
+        if data == "movie_close":
+            await callback_query.message.delete()
+            # Clean up user data
+            if user_id in MOVIE_SEARCH_DATA:
+                del MOVIE_SEARCH_DATA[user_id]
+            await callback_query.answer("Closed!")
+            return
+            
+        elif data.startswith("movie_prev_"):
+            current_page = int(data.split("_")[2])
+            await callback_query.answer()
+            await show_movie_page(client, callback_query.message, user_id, current_page - 1)
+            
+        elif data.startswith("movie_next_"):
+            current_page = int(data.split("_")[2])
+            await callback_query.answer()
+            await show_movie_page(client, callback_query.message, user_id, current_page + 1)
+            
+        elif data.startswith("movie_refresh_"):
+            current_page = int(data.split("_")[2])
+            await callback_query.answer("Refreshing...")
+            await show_movie_page(client, callback_query.message, user_id, current_page)
+            
+    except Exception as e:
+        logger.error(f"Error in movie pagination callback: {e}", exc_info=True)
+        await callback_query.answer("Error occurred!", show_alert=True)
+
+def get_size(size):
+    """Convert file size to human readable format"""
+    if not size:
+        return "0 B"
+    
+    try:
+        size = int(size)
+        power = 2**10
+        n = 0
+        power_labels = {0: 'B', 1: 'KB', 2: 'MB', 3: 'GB', 4: 'TB'}
+        while size > power:
+            size /= power
+            n += 1
+        return f"{size:.2f} {power_labels[n]}"
+    except:
+        return "Unknown"
+
+
